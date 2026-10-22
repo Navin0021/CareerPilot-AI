@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.10.1/build/css/intlTelInput.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Profile | CareerPilot AI</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #070d1b;
+            color: #edf4ff;
+        }
+
+        .profile-page {
+            min-height: 100vh;
+            padding: 42px 20px;
+            background:
+                radial-gradient(ellipse at 15% 10%, rgba(24, 104, 255, 0.20), transparent 38%),
+                radial-gradient(ellipse at 90% 85%, rgba(45, 78, 220, 0.12), transparent 35%),
+        }
+
+        .profile-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            overflow: hidden;
+            background: #0d1729;
+            border: 1px solid #203653;
+            border-radius: 20px;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            padding: 30px;
+            background: linear-gradient(120deg, #102b50, #0d1b33 75%);
+            border-bottom: 1px solid #244568;
+        }
+
+        .profile-avatar {
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            width: 68px;
+            height: 68px;
+            border: 1px solid #398cff;
+            border-radius: 20px;
+            background: #123b70;
+            font-size: 30px;
+        }
+
+        .eyebrow {
+            color: #64a6ff;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .profile-heading h1 {
+            margin: 8px 0;
+            font-size: clamp(26px, 4vw, 36px);
+            letter-spacing: -1px;
+        }
+
+        .profile-heading h1 span {
+            color: #59a0ff;
+        }
+
+        .profile-heading p,
+        .section-heading p {
+            margin: 0;
+            color: #a9bdd8;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .profile-form {
+            padding: 26px 30px 20px;
+        }
+
+        .form-section {
+            padding: 22px;
+            border: 1px solid #233b5a;
+            border-radius: 15px;
+            background: #101e32;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin-bottom: 24px;
+        }
+
+        .section-number {
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            border-radius: 13px;
+            background: #1677f8;
+            color: white;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .section-heading h2 {
+            margin: 0 0 4px;
+            font-size: 18px;
+        }
+
+        .profile-form p {
+            margin: 0 0 17px;
+        }
+
+        .profile-form label {
+            display: block;
+            margin-bottom: 7px;
+            color: #dce8fa;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .profile-form input,
+        .profile-form select,
+        .profile-form textarea {
+            display: block;
+            width: 100%;
+            min-height: 43px;
+            padding: 11px 13px;
+            border: 1px solid #2a4262;
+            border-radius: 9px;
+            outline: none;
+            background: #091426;
+            color: #f1f6ff;
+            font: inherit;
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .profile-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .profile-form input:focus,
+        .profile-form select:focus,
+        .profile-form textarea:focus {
+            border-color: #388cff;
+            box-shadow: 0 0 0 3px rgba(56, 140, 255, 0.14);
+        }
+
+        .profile-form input::placeholder,
+        .profile-form textarea::placeholder {
+            color: #7188a8;
+        }
+
+        .profile-form .helptext {
+            display: block;
+            margin-top: 5px;
+            color: #8da4c2;
+            font-size: 12px;
+        }
+
+        .profile-form ul.errorlist {
+            margin: 0 0 8px;
+            padding-left: 18px;
+            color: #ff9292;
+            font-size: 13px;
+        }
+
+        .form-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-top: 22px;
+            padding: 17px;
+            border: 1px solid #203653;
+            border-radius: 13px;
+            background: #0a1425;
+        }
+
+        .back-button,
+        .save-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            min-height: 44px;
+            padding: 11px 18px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .back-button {
+            border: 1px solid #344b6b;
+            background: #182943;
+            color: #e2edff;
+        }
+
+        .save-button {
+            border: 0;
+            background: linear-gradient(135deg, #1681ff, #315cf5);
+            color: white;
+        }
+
+        .back-button:hover,
+        .save-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .save-button:hover {
+            background: linear-gradient(135deg, #3994ff, #4770ff);
+        }
+
+        .success-message {
+            margin: 22px 30px 0;
+            padding: 13px 16px;
+            border: 1px solid #237b5a;
+            border-radius: 10px;
+            background: #103b30;
+            color: #8ff0c3;
+            font-weight: 700;
+        }
+
+        .profile-note {
+            margin: 0;
+            padding: 0 20px 22px;
+            color: #7f95b3;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .profile-page {
+                padding: 18px 10px;
+            }
+
+            .profile-header {
+                align-items: flex-start;
+                gap: 14px;
+                padding: 22px 17px;
+            }
+
+            .profile-avatar {
+                width: 48px;
+                height: 48px;
+                border-radius: 14px;
+                font-size: 23px;
+            }
+
+            .profile-heading p {
+                font-size: 13px;
+            }
+
+            .profile-form {
+                padding: 16px 12px;
+            }
+
+            .form-section {
+                padding: 16px 12px;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+                align-items: stretch;
+                padding: 12px;
+            }
+
+            .back-button,
+            .save-button {
+                width: 100%;
+            }
+
+            .success-message {
+                margin: 16px 12px 0;
+            }
+        }
+
+        .profile-fields-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px 24px;
+            margin-top: 24px;
+        }
+
+        .profile-field {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            gap: 8px;
+        }
+
+        .profile-field.field-full-width {
+            grid-column: 1 / -1;
+        }
+
+        .profile-field label {
+            color: #dbeafe;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .profile-field input,
+        .profile-field select,
+        .profile-field textarea {
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            padding: 12px 14px;
+            background: #0b1424;
+            border: 1px solid #334155;
+            border-radius: 9px;
+            color: #f1f5f9;
+            font: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .profile-field input:focus,
+        .profile-field select:focus,
+        .profile-field textarea:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .profile-field textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .profile-field select option {
+            background: #101827;
+            color: #f1f5f9;
+        }
+
+        .required-mark {
+            color: #f87171;
+        }
+
+        .field-help {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .field-error,
+        .form-errors {
+            color: #fca5a5;
+            font-size: 12px;
+        }
+
+        @media (max-width: 650px) {
+            .profile-fields-grid {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 16px;
+            }
+
+            .profile-field.field-full-width {
+                grid-column: auto;
+            }
+        }
+
+
+        .profile-field .phone-input-wrapper {
+            width: 100%;
+            min-width: 0;
+            position: relative;
+        }
+
+        .profile-field .phone-input-wrapper .iti {
+            width: 100%;
+            display: block;
+        }
+
+        .profile-field .phone-input-wrapper .iti input#id_phone {
+            width: 100%;
+            min-height: 44px;
+            padding-left: 90px;
+            background: #0b1424;
+            color: #f1f5f9;
+            border: 1px solid #42658d;
+        }
+
+        .iti__selected-country {
+            background: #132640 !important;
+            color: #ffffff !important;
+        }
+
+        .iti__selected-country:hover {
+            background: #203957 !important;
+        }
+
+        .iti__selected-dial-code {
+            color: #ffffff !important;
+        }
+
+        .iti__dropdown-content {
+            background: #101d32 !important;
+            color: #f8fafc !important;
+            border: 1px solid #42658d !important;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .5) !important;
+            z-index: 999999 !important;
+        }
+
+        .iti__country-list {
+            background: #101d32 !important;
+            color: #f8fafc !important;
+            max-height: 260px !important;
+        }
+
+        .iti__country {
+            background: #101d32 !important;
+            color: #f8fafc !important;
+            opacity: 1 !important;
+            padding: 10px 12px !important;
+            min-height: 40px;
+        }
+
+        .iti__country-name {
+            color: #f8fafc !important;
+        }
+
+        .iti__dial-code {
+            color: #93c5fd !important;
+        }
+
+        .iti__country:hover,
+        .iti__country.iti__highlight {
+            background: #25466b !important;
+        }
+
+        .iti__search-input {
+            display: block !important;
+            width: calc(100% - 20px) !important;
+            margin: 10px !important;
+            padding: 11px 12px !important;
+            background: #091426 !important;
+            color: #ffffff !important;
+            border: 1px solid #52749b !important;
+            border-radius: 7px !important;
+            font-size: 14px !important;
+            box-sizing: border-box !important;
+        }
+
+        .iti__search-input::placeholder {
+            color: #cbd5e1 !important;
+            opacity: 1 !important;
+        }
+
+        .iti__search-input:focus {
+            border-color: #60a5fa !important;
+            outline: 2px solid rgba(96, 165, 250, .2) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="profile-page">
+        <div class="profile-container">
+
+            <header class="profile-header">
+                <div class="profile-avatar">👤</div>
+
+                <div class="profile-heading">
+                    <span class="eyebrow">CAREERPILOT AI · YOUR CAREER</span>
+                    <h1>Candidate <span>Profile</span></h1>
+                    <p>
+                        Build your professional profile to discover opportunities
+                        that match your skills and career goals.
+                    </p>
+                </div>
+            </header>
+
+            <form method="post" class="profile-form">
+                {% csrf_token %}
+
+                <div class="form-section">
+                    <div class="section-heading">
+                        <span class="section-number">01</span>
+                        <div>
+                            <h2>Your Professional Details</h2>
+                            <p>Tell us about yourself and your education.</p>
+                        </div>
+                    </div>
+
+                    {% if form.non_field_errors %}
+                    <div class="form-errors">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+
+                    <div class="profile-field">
+                        <label for="registered-email">Registered Gmail</label>
+                        <input type="email" id="registered-email" value="{{ request.user.email|default:'' }}" readonly
+                            placeholder="Your registered email will appear here" autocomplete="email">
+                        <small class="field-help">
+                            This email is taken from your account registration and cannot be changed here.
+                        </small>
+                    </div>
+
+                    {% for field in form %}
+                    <div
+                        class="profile-field {% if field.name == 'skills' or field.name == 'preferred_job_roles' or field.name == 'preferred_locations' %}field-full-width{% endif %}">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}
+                            <span class="required-mark">*</span>
+                            {% endif %}
+                        </label>
+
+
+                        {% if field.name == "phone" %}
+                        <div class="phone-input-wrapper">
+                            <input type="tel" id="id_phone" name="phone" class="form-input"
+                                placeholder="Enter phone number" autocomplete="tel"
+                                value="{{ field.value|default_if_none:'' }}" required>
+                        </div>
+                        {% else %}
+                        {{ field }}
+                        {% endif %}
+
+
+                        {% if field.help_text %}
+                        <small class="field-help">{{ field.help_text }}</small>
+                        {% endif %}
+
+                        {% for error in field.errors %}
+                        <small class="field-error">{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+        </div>
+
+    </div>
+
+    <div class="form-actions">
+        <a class="back-button" href="{% url 'home' %}">
+            ← Back to Home
+        </a>
+
+        <button type="submit" class="save-button">
+            Save Profile <span>→</span>
+        </button>
+    </div>
+    </form>
+    </form>
+    </div>
+
+    <p class="profile-note">
+        Your next career opportunity starts with a complete profile.
+    </p>
+
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.10.1/build/js/intlTelInput.min.js"></script>
+
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const phoneInput = document.querySelector("#id_phone");
+
+            if (!phoneInput || typeof window.intlTelInput !== "function") {
+                console.error("Phone selector library did not load.");
+                return;
+            }
+
+            const allowedCountries = [
+                "in", "us", "gb", "ca", "au", "ae", "sg", "nz", "ie", "de",
+                "fr", "it", "es", "pt", "nl", "be", "ch", "at", "se", "no",
+                "dk", "fi", "pl", "cz", "hu", "ro", "gr", "tr", "sa", "qa",
+                "kw", "om", "bh", "za", "ng", "ke", "eg", "ma", "br", "mx",
+                "ar", "cl", "co", "jp", "cn", "kr", "my", "th", "id", "ph"
+            ];
+
+            const iti = window.intlTelInput(phoneInput, {
+                initialCountry: "in",
+                onlyCountries: allowedCountries,
+                separateDialCode: true,
+                nationalMode: true,
+                formatOnDisplay: false,
+                formatAsYouType: false,
+                loadUtils: () =>
+                    import(
+                        "https://cdn.jsdelivr.net/npm/intl-tel-input@25.10.1/build/js/utils.js"
+                    )
+            });
+
+            const form = phoneInput.closest("form");
+
+            // Spaces must not consume the 10-digit allowance.
+            phoneInput.maxLength = 25;
+            phoneInput.placeholder = "Enter 10-digit mobile number";
+
+            // Remove formatting from an existing value on page load.
+            phoneInput.value = phoneInput.value.replace(/\D/g, "");
+
+            function updateCountrySettings() {
+                const country = iti.getSelectedCountryData();
+
+                phoneInput.maxLength = 25;
+                phoneInput.placeholder = country.iso2 === "in"
+                    ? "Enter 10-digit mobile number"
+                    : "Enter phone number";
+            }
+
+            phoneInput.addEventListener("input", function () {
+                const country = iti.getSelectedCountryData();
+                const limit = country.iso2 === "in" ? 10 : 15;
+                const digits = phoneInput.value.replace(/\D/g, "");
+
+                if (digits.length > limit || phoneInput.value !== digits) {
+                    phoneInput.value = digits.slice(0, limit);
+                }
+            });
+
+            phoneInput.addEventListener("countrychange", updateCountrySettings);
+            updateCountrySettings();
+
+            form.addEventListener("submit", function (event) {
+                const country = iti.getSelectedCountryData();
+                const digits = phoneInput.value.replace(/\D/g, "");
+
+                if (country.iso2 === "in" && digits.length !== 10) {
+                    event.preventDefault();
+                    alert("Enter all 10 digits of your Indian mobile number.");
+                    phoneInput.focus();
+                    return;
+                }
+
+                if (!iti.isValidNumber()) {
+                    event.preventDefault();
+                    alert(
+                        "The phone number is not valid for the selected country. " +
+                        "Please confirm the country code and all 10 digits."
+                    );
+                    phoneInput.focus();
+                    return;
+                }
+            })
+        });
+    </script>
+</body>
+
+</html>

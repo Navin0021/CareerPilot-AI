@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | CareerPilot AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            width: 400px;
+            max-width: 100%;
+            padding: 32px;
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            text-align: center;
+            color: #173b70;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            color: #334155;
+            margin: 16px 0 7px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 24px;
+            border: none;
+            border-radius: 7px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .error {
+            color: #b91c1c;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 22px;
+            color: #64748b;
+        }
+
+        a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <h1>CareerPilot AI</h1>
+        <p class="subtitle">Welcome back! Sign in to continue.</p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <p class="error">
+                    Invalid username or password. Please try again.
+                </p>
+            {% endif %}
+
+            <label for="id_username">Username</label>
+            <input
+                type="text"
+                name="username"
+                id="id_username"
+                autocomplete="username"
+                required
+            >
+
+            <label for="id_password">Password</label>
+            <input
+                type="password"
+                name="password"
+                id="id_password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button type="submit">Login</button>
+
+            <input
+                type="hidden"
+                name="next"
+                value="{{ next|default:'/' }}"
+            >
+        </form>
+
+        <p class="footer">
+            Don't have an account?
+            <a href="{% url 'register' %}">Create an account</a>
+        </p>
+    </div>
+</body>
+</html>

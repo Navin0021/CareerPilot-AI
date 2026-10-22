@@ -1,0 +1,547 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | CareerPilot AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 35px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            color: #172554;
+            background: linear-gradient(135deg, #eaf0ff, #f8fafc);
+        }
+
+        .register-card {
+            width: 100%;
+            max-width: 470px;
+            padding: 34px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            box-shadow: 0 18px 55px rgba(30, 64, 175, 0.12);
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 26px;
+        }
+
+        .brand-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+            height: 46px;
+            margin-bottom: 10px;
+            border-radius: 14px;
+            color: white;
+            background: #2563eb;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 29px;
+            letter-spacing: -0.8px;
+        }
+
+        .subtitle {
+            margin: 10px 0 0;
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .form-input {
+            display: block;
+            width: 100%;
+            min-height: 47px;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            background: #fff;
+            color: #0f172a;
+            font-size: 15px;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .form-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+        }
+
+        .field-error {
+            margin: 7px 0 0;
+            color: #b91c1c;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .error-summary {
+            margin-bottom: 20px;
+            padding: 12px 14px;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            background: #fef2f2;
+            color: #991b1b;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .submit-button {
+            display: block;
+            width: 100%;
+            min-height: 49px;
+            margin-top: 8px;
+            border: 0;
+            border-radius: 10px;
+            background: #2563eb;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background .2s, transform .2s;
+        }
+
+        .submit-button:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .bottom-text {
+            margin: 22px 0 0;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        a {
+            color: #2563eb;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .home-link {
+            display: block;
+            margin-top: 17px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .register-card {
+                padding: 25px 20px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+        }
+
+        .email-input-row {
+            display: flex;
+            gap: 9px;
+            align-items: stretch;
+        }
+
+        .email-input-row .form-input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .otp-button {
+            flex-shrink: 0;
+            padding: 0 14px;
+            border: 0;
+            border-radius: 10px;
+            background: #0f766e;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .otp-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .otp-status {
+            margin-top: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .otp-input {
+            letter-spacing: 4px;
+        }
+
+        @media (max-width: 380px) {
+            .email-input-row {
+                flex-wrap: wrap;
+            }
+
+            .email-input-row .otp-button {
+                min-height: 44px;
+            }
+        }
+
+        .email-input-row {
+            display: flex;
+            gap: 9px;
+            align-items: stretch;
+        }
+
+        .email-input-row .form-input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .otp-button {
+            flex-shrink: 0;
+            padding: 0 14px;
+            min-height: 44px;
+            border: none;
+            border-radius: 10px;
+            background: #0f766e;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .otp-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .otp-status {
+            margin-top: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .otp-input {
+            letter-spacing: 4px;
+        }
+
+        @media (max-width: 380px) {
+            .email-input-row {
+                flex-wrap: wrap;
+            }
+
+            .email-input-row .otp-button {
+                min-height: 44px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="register-card">
+        <header class="brand">
+            <div class="brand-icon">C</div>
+            <h1>Join CareerPilot AI</h1>
+            <p class="subtitle">
+                Create your account and take the next step in your career.
+            </p>
+        </header>
+
+        {% if form.non_field_errors %}
+        <div class="error-summary" role="alert">
+            {% for error in form.non_field_errors %}
+            <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if form.errors %}
+        <div class="error-summary" role="alert">
+            Please correct the highlighted fields and try again.
+        </div>
+        {% endif %}
+
+
+        <form method="post" action="{% url 'register' %}" id="registration-form"
+            data-email-verified="{{ email_verified|yesno:'true,false' }}">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                </label>
+
+                {% if field.name == "email" %}
+                <div class="email-input-row">
+                    {{ field }}
+                    <button type="button" class="otp-button" id="get-otp-button">
+                        Get OTP
+                    </button>
+                </div>
+
+                <p class="otp-status" id="otp-status" aria-live="polite"></p>
+                {% else %}
+                {{ field }}
+                {% endif %}
+
+                {% for error in field.errors %}
+                <p class="field-error" role="alert">
+                    {{ error }}
+                </p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            <div class="form-group" id="otp-group" hidden>
+                <label for="registration-otp">Email verification OTP</label>
+
+                <input type="text" id="registration-otp" name="registration_otp" class="form-input otp-input"
+                    inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6"
+                    placeholder="Enter 6-digit OTP">
+
+                <button type="button" class="otp-button" id="verify-otp-button" style="margin-top: 10px;">
+                    Verify OTP
+                </button>
+
+                <p class="otp-status" id="verify-status" aria-live="polite"></p>
+            </div>
+
+            <button type="submit" class="submit-button" id="create-account-button" disabled>
+                Verify email to continue
+            </button>
+        </form>
+
+
+        <p class="bottom-text">
+            Already have an account?
+            <a href="{% url 'login' %}">Log in</a>
+        </p>
+
+        <a class="home-link" href="{% url 'home' %}">
+            ← Back to CareerPilot AI
+        </a>
+    </main>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("registration-form");
+            const emailInput = document.getElementById("id_email");
+            const getOtpButton = document.getElementById("get-otp-button");
+            const otpGroup = document.getElementById("otp-group");
+            const otpInput = document.getElementById("registration-otp");
+            const verifyOtpButton = document.getElementById("verify-otp-button");
+            const createAccountButton = document.getElementById("create-account-button");
+            const otpStatus = document.getElementById("otp-status");
+            const verifyStatus = document.getElementById("verify-status");
+
+            if (
+                !form || !emailInput || !getOtpButton || !otpGroup ||
+                !otpInput || !verifyOtpButton || !createAccountButton ||
+                !otpStatus || !verifyStatus
+            ) {
+                console.error("Registration form is missing a required element.");
+                return;
+            }
+
+            const csrfInput = form.querySelector(
+                'input[name="csrfmiddlewaretoken"]'
+            );
+
+            if (!csrfInput) {
+                console.error("CSRF token is missing from the registration form.");
+                return;
+            }
+
+            let emailVerified = form.dataset.emailVerified === "true";
+        if (emailVerified) {
+            emailInput.readOnly = true;
+            getOtpButton.disabled = true;
+            otpGroup.hidden = true;
+            createAccountButton.disabled = false;
+            createAccountButton.textContent = "Create My Account";
+        }
+
+        function showStatus(element, message, success = false) {
+            element.textContent = message || "";
+            element.style.color = success ? "#15803d" : "#b91c1c";
+        }
+
+        async function postData(url, data) {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfInput.value
+                },
+                body: new URLSearchParams(data),
+                credentials: "same-origin"
+            });
+
+            let result;
+            try {
+                result = await response.json();
+            } catch {
+                throw new Error("The server returned an invalid response.");
+            }
+
+            return { response, result };
+        }
+
+        // Request a registration OTP.
+        getOtpButton.addEventListener("click", async function () {
+            const email = emailInput.value.trim().toLowerCase();
+
+            if (!emailInput.checkValidity() || !email) {
+                emailInput.reportValidity();
+                return;
+            }
+
+            getOtpButton.disabled = true;
+            showStatus(otpStatus, "Sending OTP...", true);
+
+            try {
+                const { response, result } = await postData(
+                    "{% url 'send_registration_otp' %}",
+                    { email: email }
+                );
+
+                if (!response.ok || !result.success) {
+                    showStatus(
+                        otpStatus,
+                        result.message || "Unable to send OTP. Please try again."
+                    );
+                    return;
+                }
+
+                showStatus(otpStatus, result.message, true);
+
+                otpGroup.hidden = false;
+                otpInput.value = "";
+                otpInput.readOnly = false;
+                verifyOtpButton.disabled = false;
+                createAccountButton.disabled = true;
+                createAccountButton.textContent = "Verify email to continue";
+                verifyStatus.textContent = "";
+                otpInput.focus();
+
+            } catch (error) {
+                console.error("Registration OTP request failed:", error);
+                showStatus(
+                    otpStatus,
+                    error.message || "Could not contact the server. Please try again."
+                );
+            } finally {
+                getOtpButton.disabled = false;
+            }
+        });
+
+        // Verify the six-digit OTP.
+        verifyOtpButton.addEventListener("click", async function () {
+            const email = emailInput.value.trim().toLowerCase();
+            const otp = otpInput.value.trim();
+
+            if (!/^\d{6}$/.test(otp)) {
+                showStatus(verifyStatus, "Enter the six-digit OTP.");
+                return;
+            }
+
+            verifyOtpButton.disabled = true;
+            showStatus(verifyStatus, "Verifying OTP...", true);
+
+            try {
+                const { response, result } = await postData(
+                    "{% url 'verify_registration_otp' %}",
+                    { email: email, otp: otp }
+                );
+
+                if (!response.ok || !result.success) {
+                    showStatus(
+                        verifyStatus,
+                        result.message || "OTP verification failed."
+                    );
+                    return;
+                }
+
+                emailVerified = true;
+                emailInput.readOnly = true;
+                getOtpButton.disabled = true;
+                otpInput.readOnly = true;
+                createAccountButton.disabled = false;
+                createAccountButton.textContent = "Create My Account";
+
+                showStatus(verifyStatus, result.message, true);
+                showStatus(otpStatus, "Email verified successfully.", true);
+
+            } catch (error) {
+                console.error("OTP verification failed:", error);
+                showStatus(
+                    verifyStatus,
+                    "Could not contact the server. Please try again."
+                );
+            } finally {
+                verifyOtpButton.disabled = emailVerified;
+            }
+        });
+
+        // Changing the email requires a fresh OTP.
+        emailInput.addEventListener("input", function () {
+            emailVerified = false;
+            emailInput.readOnly = false;
+            getOtpButton.disabled = false;
+            otpGroup.hidden = true;
+            otpInput.readOnly = false;
+            otpInput.value = "";
+            verifyOtpButton.disabled = false;
+            createAccountButton.disabled = true;
+            createAccountButton.textContent = "Verify email to continue";
+            verifyStatus.textContent = "";
+            otpStatus.textContent = "";
+        });
+
+        // Prevent account creation until email verification succeeds.
+        form.addEventListener("submit", function (event) {
+            if (!emailVerified) {
+                event.preventDefault();
+                showStatus(
+                    otpStatus,
+                    "Please verify your email before creating your account."
+                );
+            }
+        });
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Tracker | CareerPilot AI</title>
+    <link rel="stylesheet" href="{% static 'jobportal/css/style.css' %}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <a class="brand" href="/">
+            <span class="brand-icon">C</span>
+            CareerPilot <span class="ai">AI</span>
+        </a>
+        <div class="nav-links">
+            <a href="/">Find Jobs</a>
+            <a href="{% url 'saved_jobs' %}">Saved Jobs</a>
+            <a class="active" href="{% url 'application_tracker' %}">
+                Application Tracker
+            </a>
+        </div>
+        <a class="nav-button" href="/">Browse Jobs</a>
+    </nav>
+    <div class="back-button-container">
+        <a href="/" class="back-button">
+            &larr; Back to Home
+        </a>
+    </div>
+
+    <main class="jobs-section">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">YOUR CAREER JOURNEY</span>
+                <h2>Application Tracker</h2>
+                <p class="section-description">
+                    Track your job applications and update their progress.
+                </p>
+            </div>
+        </div>
+
+        <section class="tracker-add">
+            <h3>Track a job application</h3>
+            <p>Select a job to add it to your tracker.</p>
+
+            <form method="post" action="{% url 'add_application' %}" class="tracker-form">
+                {% csrf_token %}
+                <select name="job_id" required>
+                    <option value="">Choose a job</option>
+                    {% for job in jobs %}
+                    <option value="{{ job.id }}">
+                        {{ job.title }} — {{ job.company }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button class="primary-button" type="submit">
+                    Add to Tracker
+                </button>
+            </form>
+        </section>
+
+        <div class="section-heading tracker-heading">
+            <div>
+                <h2>Your applications</h2>
+                <p class="section-description">
+                    Update each status as your application progresses.
+                </p>
+            </div>
+        </div>
+
+        {% if applications %}
+        <div class="job-grid">
+            {% for application in applications %}
+            <article class="job-card">
+                <div class="job-card-top">
+                    <div class="company-icon">
+                        {{ application.job.company|first|upper }}
+                    </div>
+                    <span class="job-badge">
+                        {{ application.get_status_display }}
+                    </span>
+                </div>
+
+                {% if application.external_job %}
+                <h3>{{ application.external_job.title }}</h3>
+                <p>
+                    {{ application.external_job.company }}
+                    · {{ application.external_job.location }}
+                </p>
+                {% elif application.job %}
+                <h3>{{ application.job.title }}</h3>
+                <p>
+                    {{ application.job.company }}
+                    · {{ application.job.location }}
+                </p>
+                {% endif %}
+
+                <form method="post" action="{% url 'update_application_status' application.id %}" class="status-form">
+                    {% csrf_token %}
+                    <label for="status-{{ application.id }}">
+                        Update status
+                    </label>
+
+
+
+                    <select name="status" id="status-{{ application.id }}" required>
+                        <option value="APPLIED" {% if application.status == "APPLIED" %}selected{% endif %}>Applied
+                        </option>
+                        <option value="INTERVIEW" {% if application.status == "INTERVIEW" %}selected{% endif %}>Interview
+                        </option>
+                        <option value="SELECTED" {% if application.status == "SELECTED" %}selected{% endif %}>Selected
+                        </option>
+                        <option value="REJECTED" {% if application.status == "REJECTED" %}selected{% endif %}>Rejected
+                        </option>
+                    </select>
+
+                    <button class="primary-button" type="submit">
+                        Update Status
+                    </button>
+                </form>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h3>No applications tracked yet</h3>
+            <p>Select a job above to create your first tracker entry.</p>
+            <a class="primary-button" href="/">Explore Jobs</a>
+        </div>
+        {% endif %}
+    </main>
+
+    <footer class="footer">
+        <a class="brand footer-brand" href="/">
+            <span class="brand-icon">C</span>
+            CareerPilot <span class="ai">AI</span>
+        </a>
+        <p>Built to help you navigate your career journey.</p>
+        <span>CareerPilot AI &copy; 2026</span>
+    </footer>
+</body>
+
+</html>

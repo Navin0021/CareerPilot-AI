@@ -1,0 +1,371 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerPilot AI | Find Your Future</title>
+    <link rel="stylesheet" href="{% static 'jobportal/css/style.css' %}">
+</head>
+
+<body>
+
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="profile-success-toast" role="status" style="position:fixed;top:120px;right:25px;z-index:999999;
+            display:flex;align-items:center;gap:12px;
+            padding:16px 20px;background:#064e3b;
+            border:2px solid #22c55e;border-radius:12px;
+            color:#86efac;box-shadow:0 8px 25px #0008;
+            transition:opacity .5s ease,transform .5s ease;">
+        <span style="display:inline-flex;align-items:center;
+                         justify-content:center;width:32px;height:32px;
+                         border-radius:50%;background:#22c55e;color:#052e16;
+                         font-size:22px;font-weight:bold;">✓</span>
+        <div>
+            <strong>{{ message }}</strong>
+            <p style="margin:4px 0 0;color:#d1fae5;font-size:12px;">
+                Your career profile has been updated successfully.
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+
+    <nav class="navbar">
+        <a class="brand" href="/">
+            <span class="brand-icon">C</span>
+            CareerPilot <span class="ai">AI</span>
+        </a>
+
+        <div class="nav-links">
+            <a class="active" href="/">Find Jobs</a>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'saved_jobs' %}">Saved Jobs</a>
+            <a href="#jobs">Explore Opportunities</a>
+            <a href="{% url 'resume_analyzer' %}">Resume Analyzer</a>
+            <a href="{% url 'application_tracker' %}">Application Tracker</a>
+
+            {% if user.is_authenticated %}
+            <a href="{% url 'candidate_profile' %}">Candidate Profile</a>
+            {% endif %}
+        </div>
+
+        {% if user.is_authenticated %}
+        <div class="nav-actions">
+            <span>Hi, {{ user.username }}</span>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button class="nav-button" type="submit">Logout</button>
+            </form>
+        </div>
+        {% else %}
+        <a class="nav-button" href="{% url 'login' %}">Login / Register</a>
+        {% endif %}
+    </nav>
+
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <span class="eyebrow">YOUR CAREER, YOUR FUTURE</span>
+                <h1>Find the job that<br>moves you <span>forward.</span></h1>
+                <p>Discover opportunities that match your skills, interests,
+                    and career goals with CareerPilot AI.</p>
+
+                <form class="search-bar" method="get" action="{% url 'home' %}">
+                    <div class="search-field">
+                        <label for="job-search">Job title or company</label>
+                        <input id="job-search" type="text" name="search" value="{{ search_query }}"
+                            placeholder="e.g., Python Developer, Java">
+                    </div>
+
+                    <div class="search-field">
+                        <label for="job-skills">Your skills <span>(optional)</span></label>
+                        <input id="job-skills" type="text" name="skills" value="{{ manual_skills }}"
+                            placeholder="e.g., Python, SQL, HTML">
+                    </div>
+
+                    <button type="submit">Find Matches <span aria-hidden="true">→</span></button>
+                </form>
+
+
+
+
+                <p class="search-hint">Try searching for Python, SQL, or Developer.</p>
+            </div>
+            <div class="hero-decoration">
+                <div class="orbit orbit-one"></div>
+                <div class="orbit orbit-two"></div>
+                <div class="hero-symbol">✦</div>
+                <div class="floating-card">
+                    <span class="status-dot"></span>
+                    <div>
+                        <strong>Your next opportunity</strong>
+                        <p>Start with a search today</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats">
+            <div class="stat-item">
+                <span class="stat-number">{{ jobs|length }}</span>
+                <span class="stat-label">Matching jobs</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">AI</span>
+                <span class="stat-label">Career-focused platform</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label">Explore opportunities</span>
+            </div>
+        </section>
+
+        <section class="jobs-section" id="jobs">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">CAREER OPPORTUNITIES</span>
+                    <h2>Explore available jobs</h2>
+                    <p class="section-description">
+                        Discover roles and review the skills they require.
+                    </p>
+                </div>
+                {% if search_query %}
+                <a href="/" class="clear-search">Clear search</a>
+                {% endif %}
+            </div>
+
+            {% if jobs %}
+            <div class="job-grid">
+                {% for job in jobs %}
+                <article class="job-card">
+
+                    {% if job.match_percentage != None %}
+                    <div class="match-score">
+                        <strong>{{ job.match_percentage }}% skills match</strong>
+                        <div class="match-track">
+                            <div class="match-fill" style="width: {{ job.match_percentage }}%;"></div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="job-card-top">
+                        <div class="company-icon">
+                            {{ job.company|first|upper }}
+                        </div>
+                        <span class="job-badge">
+                            {{ job.experience_level }}
+                        </span>
+                    </div>
+
+                    <h3>{{ job.title }}</h3>
+                    <p class="company-name">{{ job.company }}</p>
+
+                    <div class="job-location">
+                        <span>⌖</span> {{ job.location }}
+                    </div>
+
+                    <p class="job-description">
+                        {{ job.clean_description }}
+                    </p>
+
+
+                    <div class="skills-area">
+                        <span class="field-label">REQUIRED SKILLS</span>
+
+
+                        <div class="job-skills-section">
+                            <h4>Required Skills</h4>
+                            <div class="skill-tags">
+                                {% for skill in job.skills_list %}
+                                <span class="skill-tag">{{ skill }}</span>
+                                {% empty %}
+                                <span class="skill-tag">Skills not specified</span>
+                                {% endfor %}
+                            </div>
+
+                            <h4>Matched Skills</h4>
+                            <div class="skill-tags matched-skills">
+                                {% for skill in job.matched_skills %}
+                                <span class="skill-tag matched-skill">{{ skill }}</span>
+                                {% empty %}
+                                <span class="skill-tag">No matched skills</span>
+                                {% endfor %}
+                            </div>
+
+                            <h4>Skills to Improve</h4>
+                            <div class="skill-tags missing-skills">
+                                {% for skill in job.missing_skills %}
+                                <span class="skill-tag missing-skill">{{ skill }}</span>
+                                {% empty %}
+                                <span class="skill-tag">No missing skills detected</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="job-card-footer">
+                        <span class="job-type">Career opportunity</span>
+
+                        <div class="job-actions">
+
+                            <form method="post" action="{% url 'save_job' job.id %}" class="save-job-form"
+                                data-job-id="{{ job.id }}">
+                                {% csrf_token %}
+                                <button class="save-job-button" type="submit">
+                                    {% if job.is_saved %}
+                                    Saved ✓
+                                    {% else %}
+                                    + Save Job
+                                    {% endif %}
+                                </button>
+                            </form>
+
+                            {% if job.application_url %}
+                            <a class="apply-link" href="{{ job.application_url }}" target="_blank"
+                                rel="noopener noreferrer">
+                                View job &rarr;
+                            </a>
+                            {% else %}
+                            <span class="apply-link unavailable">Details only</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </article>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">⌕</div>
+                <h3>No matching jobs found</h3>
+                <p>Try another keyword or clear your search to see all jobs.</p>
+                <a class="primary-button" href="/">View all jobs</a>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="cta-section">
+            <div>
+                <span class="eyebrow">YOUR NEXT CHAPTER STARTS HERE</span>
+                <h2>Every great career begins with a search.</h2>
+                <p>Explore your opportunities and keep building your future.</p>
+            </div>
+            <a class="cta-button" href="#jobs">Explore jobs &rarr;</a>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <a class="brand footer-brand" href="/">
+            <span class="brand-icon">C</span>
+            CareerPilot <span class="ai">AI</span>
+        </a>
+        <p>Built to help you navigate your career journey.</p>
+        <span>CareerPilot AI &copy; 2026</span>
+    </footer>
+
+    <script src="{% static 'jobportal/js/main.js' %}"></script>
+
+
+    <script>
+        (function () {
+            function dismissNotifications() {
+                document.querySelectorAll(".profile-success-toast").forEach(function (toast) {
+                    if (toast.dataset.dismissScheduled === "true") return;
+
+                    toast.dataset.dismissScheduled = "true";
+
+                    setTimeout(function () {
+                        toast.style.setProperty("opacity", "0", "important");
+                        toast.style.setProperty("transform", "translateY(-12px)", "important");
+
+                        setTimeout(function () {
+                            toast.remove();
+                        }, 600);
+                    }, 3500);
+                });
+            }
+
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", dismissNotifications);
+            } else {
+                dismissNotifications();
+            }
+        })();
+    </script>
+
+
+    <script>
+        document.querySelectorAll(".save-job-form").forEach((form) => {
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                const button = form.querySelector("button");
+
+                if (button.disabled) return;
+
+                const originalText = button.textContent.trim();
+
+                button.disabled = true;
+                button.textContent = "Saving...";
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: "POST",
+                        body: new FormData(form),
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.message || "Unable to save job.");
+                    }
+
+                    // Keep the user on the home page.
+                    button.textContent = "Saved ✓";
+                    button.classList.add("is-saved");
+
+                    // Keep the button disabled to prevent duplicate submissions.
+                    button.disabled = true;
+
+                } catch (error) {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                    console.error("Save job error:", error);
+                }
+            });
+        });
+    </script>
+
+
+    <script>
+        // Clear search parameters when the page is refreshed.
+        window.addEventListener("pageshow", function (event) {
+            if (performance.getEntriesByType("navigation")[0]?.type === "reload") {
+                const url = new URL(window.location.href);
+
+                if (url.searchParams.has("search") ||
+                    url.searchParams.has("skills")) {
+                    url.searchParams.delete("search");
+                    url.searchParams.delete("skills");
+
+                    window.location.replace(
+                        url.pathname + url.search + url.hash
+                    );
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

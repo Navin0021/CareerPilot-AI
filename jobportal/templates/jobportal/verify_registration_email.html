@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email | CareerPilot AI</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #070d1b;
+            color: #edf4ff;
+        }
+        .verify-card {
+            width: 100%;
+            max-width: 440px;
+            padding: 32px;
+            background: #0d1729;
+            border: 1px solid #203653;
+            border-radius: 18px;
+        }
+        h1 { margin-top: 0; }
+        p { color: #a9bdd8; line-height: 1.6; }
+        label { display: block; margin: 20px 0 8px; }
+        input {
+            width: 100%;
+            padding: 13px;
+            background: #091426;
+            color: white;
+            border: 1px solid #2a4262;
+            border-radius: 9px;
+            font-size: 18px;
+            letter-spacing: 5px;
+        }
+        button {
+            width: 100%;
+            margin-top: 16px;
+            padding: 13px;
+            border: 0;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #1681ff, #315cf5);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .message { margin-bottom: 12px; color: #fcd98b; }
+    </style>
+</head>
+<body>
+    <main class="verify-card">
+        <h1>Verify your email</h1>
+        <p>We sent a six-digit verification code to:</p>
+        <p><strong>{{ email }}</strong></p>
+        <p>The code expires in five minutes.</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p class="message">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <label for="otp">Six-digit OTP</label>
+            <input
+                type="text"
+                id="otp"
+                name="otp"
+                inputmode="numeric"
+                pattern="[0-9]{6}"
+                maxlength="6"
+                autocomplete="one-time-code"
+                required
+            >
+            <button type="submit">Verify and Activate Account</button>
+        </form>
+    </main>
+</body>
+</html>

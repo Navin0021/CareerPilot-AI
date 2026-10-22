@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Jobs | CareerPilot AI</title>
+    <link rel="stylesheet" href="{% static 'jobportal/css/style.css' %}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <a class="brand" href="/">
+            <span class="brand-icon">C</span>
+            CareerPilot <span class="ai">AI</span>
+        </a>
+        <div class="nav-links">
+            <a href="/">Find Jobs</a>
+            <a class="active" href="{% url 'saved_jobs' %}">Saved Jobs</a>
+        </div>
+        <a class="nav-button" href="/">Browse Jobs</a>
+    </nav>
+
+    <main class="jobs-section">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">YOUR PERSONAL SHORTLIST</span>
+                <h2>Saved Jobs</h2>
+                <div class="saved-jobs-back">
+                    <a href="/" class="back-button">&larr; Back to Home</a>
+                </div>
+                <p class="section-description">
+                    Keep track of opportunities you want to revisit.
+                </p>
+            </div>
+        </div>
+
+        {% if jobs %}
+        <div class="job-grid">
+            {% for job in jobs %}
+
+            <article class="job-card">
+                <div class="job-card-top">
+                    <div class="company-icon">
+                        {{ job.company|first|upper }}
+                    </div>
+                    <span class="job-badge">
+                        {{ job.experience_level|default:"Job opportunity" }}
+                    </span>
+                </div>
+
+                <h3>{{ job.title }}</h3>
+                <p class="company-name">{{ job.company|default:"Company not listed" }}</p>
+                <p class="job-location">{{ job.location|default:"Location not listed" }}</p>
+
+                <p class="job-description">
+                    {{ job.display_description|truncatewords:45 }}
+                </p>
+
+                <div class="skill-tags">
+                    {% for skill in job.skills_list %}
+                    <span class="skill-tag">{{ skill }}</span>
+                    {% empty %}
+                    <span class="skill-tag">Skills not specified</span>
+                    {% endfor %}
+                </div>
+
+                <div class="job-card-footer">
+                    {% if job.application_url %}
+                    <a class="apply-link" href="{{ job.application_url }}" target="_blank" rel="noopener noreferrer">
+                        View job &rarr;
+                    </a>
+                    {% else %}
+                    <span class="apply-link unavailable">Details only</span>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'remove_saved_job' job.saved_record_id %}">
+                        {% csrf_token %}
+                        <button class="save-job-button remove-button" type="submit">
+                            Remove
+                        </button>
+                    </form>
+                </div>
+            </article>
+
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h3>No saved jobs yet</h3>
+            <p>Browse available jobs and save the ones you like.</p>
+            <a class="primary-button" href="/">Find Jobs</a>
+        </div>
+        {% endif %}
+    </main>
+
+    <footer class="footer">
+        <a class="brand footer-brand" href="/">
+            <span class="brand-icon">C</span>
+            CareerPilot <span class="ai">AI</span>
+        </a>
+        <p>Built to help you navigate your career journey.</p>
+        <span>CareerPilot AI &copy; 2026</span>
+    </footer>
+</body>
+
+</html>

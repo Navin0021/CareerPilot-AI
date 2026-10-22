@@ -1,0 +1,12 @@
+﻿.env
+.venv/
+__pycache__/
+*.py[cod]
+db.sqlite3
+staticfiles/
+media/
+
+# Local editor settings and backup files
+.vscode/
+Python/
+manage_empty_backup.txt

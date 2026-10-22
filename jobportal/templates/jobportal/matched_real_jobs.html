@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matched Jobs | CareerPilot AI</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b1220;
+            color: #f1f5f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .job {
+            background: #172033;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+
+        h1,
+        h2 {
+            color: #93c5fd;
+        }
+
+        .muted {
+            color: #cbd5e1;
+        }
+
+        .score {
+            display: inline-block;
+            background: #14532d;
+            color: #bbf7d0;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .apply {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        a.back {
+            color: #93c5fd;
+        }
+
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin: 18px 0;
+        }
+
+        .score-card {
+            background: #0b1220;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .score-label {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .score-value {
+            font-size: 22px;
+            font-weight: bold;
+            color: #93c5fd;
+        }
+
+        .progress-track {
+            height: 7px;
+            background: #334155;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #34d399;
+            border-radius: 10px;
+        }
+
+        .match-reasons {
+            background: #0b1220;
+            border-radius: 8px;
+            padding: 12px 12px 12px 30px;
+            color: #cbd5e1;
+        }
+
+        .experience-warning {
+            color: #fbbf24;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding: 16px;
+            }
+
+            .score-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+        <a class="back" href="/">← Back to Home</a>
+
+        <h1>Your Profile-Matched Jobs</h1>
+
+        {% if profile %}
+        <p class="muted">
+            Matching jobs against your saved skills, preferred roles,
+            and preferred locations.
+        </p>
+        {% else %}
+        <p class="muted">
+            You haven't created a candidate profile yet.
+            <a class="back" href="{% url 'candidate_profile' %}">
+                Create your profile
+            </a>
+            to personalize job matching.
+        </p>
+        {% endif %}
+
+        {% for job in jobs %}
+        <article class="job">
+            <h2>{{ job.title }}</h2>
+
+            <p class="muted">
+                {{ job.company|default:"Company not listed" }}
+                · {{ job.location|default:"Location not listed" }}
+            </p>
+
+
+            <p>
+                <span class="score">
+                    {{ job.match_percentage }}% overall match
+                </span>
+            </p>
+
+            <div class="score-grid">
+
+                <div class="score-card">
+                    <div class="score-label">Skill Match</div>
+                    <div class="score-value">
+                        {% if job.skill_match_percentage != None %}
+                        {{ job.skill_match_percentage }}%
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </div>
+                    {% if job.skill_match_percentage != None %}
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: {{ job.skill_match_percentage }}%;">
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="score-card">
+                    <div class="score-label">Role Match</div>
+                    <div class="score-value">
+                        {% if job.role_match_percentage != None %}
+                        {{ job.role_match_percentage }}%
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="score-card">
+                    <div class="score-label">Location Match</div>
+                    <div class="score-value">
+                        {% if job.location_match_percentage != None %}
+                        {{ job.location_match_percentage }}%
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+            {% if job.match_reasons %}
+            <h3>Why this job matches</h3>
+            <ul class="match-reasons">
+                {% for reason in job.match_reasons %}
+                <li>{{ reason }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% if job.experience_match == False %}
+            <p class="experience-warning">
+                ⚠ This job may require more experience than your profile indicates.
+            </p>
+            {% elif job.experience_match == True %}
+            <p class="muted">
+                ✓ No obvious experience mismatch was detected.
+            </p>
+            {% endif %}
+
+            <p>{{ job.clean_description|default:"No description available" }}</p>
+
+            {% if job.matched_skills %}
+            <p>
+                <strong>Matched skills:</strong>
+                {{ job.matched_skills|join:", " }}
+            </p>
+            {% endif %}
+
+            {% if job.missing_skills %}
+            <p>
+                <strong>Skills to develop:</strong>
+                {{ job.missing_skills|join:", " }}
+            </p>
+            {% endif %}
+
+            {% if job.salary %}
+            <p>Salary: {{ job.salary }}</p>
+            {% endif %}
+
+            {% if job.application_url %}
+            <a class="apply" href="{{ job.application_url }}" target="_blank" rel="noopener noreferrer">
+                View / Apply
+            </a>
+            {% endif %}
+        </article>
+        {% empty %}
+        <p>No real jobs are saved yet. Fetch jobs from the Real Jobs page first.</p>
+        {% endfor %}
+    </main>
+</body>
+
+</html>

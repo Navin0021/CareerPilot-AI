@@ -1,0 +1,556 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analyzer | CareerPilot AI</title>
+    <link rel="stylesheet" href="{% static 'jobportal/css/style.css' %}">
+    <style>
+        .resume-page {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 24px;
+            color: #e2e8f0;
+        }
+
+        .resume-panel {
+            padding: 28px;
+            margin-bottom: 24px;
+            background: #101827;
+            border: 1px solid #26364c;
+            border-radius: 18px;
+        }
+
+        .resume-page h1,
+        .resume-page h2 {
+            color: #f1f5f9;
+        }
+
+        .resume-page h1 span {
+            color: #60a5fa;
+        }
+
+        .resume-subtitle {
+            color: #94a3b8;
+            line-height: 1.7;
+        }
+
+        .resume-form {
+            display: grid;
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .resume-form label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        .resume-form input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px;
+            border: 1px solid #334155;
+            border-radius: 9px;
+            background: #0b1424;
+            color: #f1f5f9;
+        }
+
+        .resume-submit {
+            padding: 13px 20px;
+            border: 0;
+            border-radius: 9px;
+            background: #2563eb;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .resume-submit:hover {
+            background: #1d4ed8;
+        }
+
+        .resume-error {
+            color: #fca5a5;
+            margin-top: 6px;
+            font-size: 13px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .result-card {
+            padding: 18px;
+            background: #0b1424;
+            border: 1px solid #334155;
+            border-radius: 12px;
+        }
+
+        .result-card h3 {
+            margin-top: 0;
+            color: #93c5fd;
+        }
+
+        .skill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+
+        .skill-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 7px 12px;
+            border: 1px solid #334155;
+            border-radius: 20px;
+            background: #1e3a5f;
+            color: #bfdbfe;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .skill-chip.matched {
+            background: #12352b;
+            border-color: #166534;
+            color: #86efac;
+        }
+
+        .skill-chip.missing {
+            background: #422006;
+            border-color: #92400e;
+            color: #fde68a;
+        }
+
+
+        .match-score {
+            color: #86efac;
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        .match-score-track {
+            width: 100%;
+            height: 12px;
+            margin-top: 12px;
+            overflow: hidden;
+            background: #263449;
+            border-radius: 999px;
+        }
+
+        .match-score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #34d399);
+            border-radius: 999px;
+            transition: width 0.4s ease;
+        }
+
+        .match-summary {
+            margin-top: 12px;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+
+        .resume-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #93c5fd;
+            text-decoration: none;
+        }
+
+        @media (max-width: 650px) {
+            .resume-page {
+                margin: 20px auto;
+                padding: 14px;
+            }
+
+            .resume-panel {
+                padding: 20px;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .resume-summary-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            margin-top: 24px;
+        }
+
+        .summary-card {
+            min-width: 0;
+        }
+
+        .summary-card h3 {
+            font-size: 15px;
+        }
+
+        .summary-card p {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 0;
+        }
+
+        .summary-number {
+            color: #60a5fa;
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .missing-number {
+            color: #fbbf24;
+        }
+
+        @media (max-width: 800px) {
+            .resume-summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        .resume-checklist {
+            display: grid;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            background: #0b1424;
+            color: #cbd5e1;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 16px;
+            min-width: 16px;
+            margin-top: 4px;
+            accent-color: #34d399;
+        }
+
+        .checklist-complete {
+            padding: 14px;
+            border-radius: 10px;
+            background: #12352b;
+            color: #86efac;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="resume-page">
+        <a class="resume-back" href="{% url 'home' %}">← Back to Home</a>
+
+        <section class="resume-panel">
+            <h1>Resume <span>Analyzer</span></h1>
+            <p class="resume-subtitle">
+                Upload your PDF resume to identify your skills and compare
+                them with the requirements of your target job role.
+            </p>
+
+            <form class="resume-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% for field in form %}
+
+                <div>
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+
+                    {% for error in field.errors %}
+                    <div class="resume-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+
+                <button class="resume-submit" type="submit">
+                    Analyze My Resume
+                </button>
+            </form>
+        </section>
+
+        {% if analysis %}
+        <section class="resume-panel">
+            <h2>Analysis Report</h2>
+
+            <div class="result-grid resume-summary-grid">
+
+                <div class="result-card summary-card">
+                    <h3>Skill Match</h3>
+                    <div class="match-score">
+                        {{ analysis.match_percentage }}%
+                    </div>
+                    <p>Match with target role</p>
+                </div>
+
+                <div class="result-card summary-card">
+                    <h3>Skills Matched</h3>
+                    <div class="summary-number">
+                        {{ analysis.matched_skills|length }}
+                    </div>
+                    <p>Relevant skills found</p>
+                </div>
+
+                <div class="result-card summary-card">
+                    <h3>Missing Skills</h3>
+                    <div class="summary-number missing-number">
+                        {{ analysis.missing_skills|length }}
+                    </div>
+                    <p>Skills to develop</p>
+                </div>
+
+                <div class="result-card summary-card">
+                    <h3>Resume Words</h3>
+                    <div class="summary-number">
+                        {{ analysis.resume_word_count }}
+                    </div>
+                    <p>Words extracted</p>
+                </div>
+
+            </div>
+
+            <p class="resume-subtitle">
+                Target role: {{ analysis.target_role }}
+            </p>
+            <p class="resume-subtitle">
+                Requirements source: {{ analysis.requirements_source }}
+            </p>
+
+            {% if analysis.role_supported %}
+
+            <div class="match-score">
+                {{ analysis.match_percentage }}%
+            </div>
+
+            <div class="match-score-track" role="progressbar" aria-label="Resume skill match" aria-valuemin="0"
+                aria-valuemax="100" aria-valuenow="{{ analysis.match_percentage }}">
+                <div class="match-score-fill" style="width: {{ analysis.match_percentage }}%;"></div>
+            </div>
+
+            <p class="match-summary">
+                {% if analysis.match_percentage >= 80 %}
+                Strong skill match for the selected role.
+                {% elif analysis.match_percentage >= 50 %}
+                Moderate skill match. Review the missing skills below.
+                {% else %}
+                More role-specific skills may be needed. Review the recommendations below.
+                {% endif %}
+            </p>
+
+            {% else %}
+            <p class="resume-subtitle">
+                We don't have predefined requirements for this role yet.
+                Paste the job description above and analyze again to identify
+                the skills required for this specific job.
+            </p>
+            {% endif %}
+
+            <div class="result-grid">
+                <div class="result-card">
+                    <h3>Skills Found</h3>
+                    <div class="skill-list">
+                        {% for skill in analysis.detected_skills %}
+                        <span class="skill-chip matched">{{ skill }}</span>
+                        {% empty %}
+                        <p>No supported skills were detected.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>Skills Matched to Role</h3>
+                    <div class="skill-list">
+                        {% for skill in analysis.matched_skills %}
+                        <span class="skill-chip matched">{{ skill }}</span>
+                        {% empty %}
+                        <p>No matching skills found.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>Skills to Develop</h3>
+                    <div class="skill-list">
+                        {% for skill in analysis.missing_skills %}
+                        <span class="skill-chip missing">{{ skill }}</span>
+                        {% empty %}
+                        <p>No missing skills in the configured list.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>Learning Recommendations</h3>
+
+                    {% for item in analysis.learning_recommendations %}
+                    <div style="margin-bottom: 18px;">
+                        <h4 style="color: #93c5fd; margin-bottom: 8px;">
+                            {{ item.skill }}
+                        </h4>
+
+                        <p style="color: #cbd5e1;">
+                            <strong>What to learn:</strong>
+                            {{ item.topic }}
+                        </p>
+                        <p style="color: #cbd5e1;">
+                            <strong>Learning Level:</strong>
+                            {{ item.level }}
+                        </p>
+
+                        <p style="color: #cbd5e1;">
+                            <strong>Priority:</strong>
+                            {{ item.priority }}
+                        </p>
+
+                        <p style="color: #cbd5e1;">
+                            <strong>Practice project:</strong>
+                            {{ item.project }}
+                        </p>
+                    </div>
+                    {% empty %}
+                    <p>
+                        No learning recommendations at the moment.
+                        Your resume may already contain all the configured required skills.
+                    </p>
+                    {% endfor %}
+                </div>
+
+
+                <div class="result-card">
+                    <h3>Resume Overview</h3>
+                    <p>Words extracted: {{ analysis.resume_word_count }}</p>
+                    <p>Skills detected: {{ analysis.detected_skills|length }}</p>
+                    <p>Required skills: {{ analysis.required_skills|length }}</p>
+                </div>
+            </div>
+
+            <div class="result-card" style="margin-top: 20px;">
+                <h3>Resume Quality Report</h3>
+
+                <p>
+                    Sections detected:
+                    <strong>
+                        {{ analysis.quality_report.sections_found_count }}
+                        /
+                        {{ analysis.quality_report.sections_checked_count }}
+                    </strong>
+                </p>
+
+                <p>
+                    Email detected:
+                    {% if analysis.quality_report.email_found %}
+                    <span style="color: #86efac;">Yes ✓</span>
+                    {% else %}
+                    <span style="color: #fca5a5;">No</span>
+                    {% endif %}
+                </p>
+
+                <p>
+                    Phone detected:
+                    {% if analysis.quality_report.phone_found %}
+                    <span style="color: #86efac;">Yes ✓</span>
+                    {% else %}
+                    <span style="color: #fca5a5;">No</span>
+                    {% endif %}
+                </p>
+
+                <h3>Sections Found</h3>
+                <div class="skill-list">
+                    {% for section in analysis.quality_report.sections_found %}
+                    <span class="skill-chip">{{ section }}</span>
+                    {% empty %}
+                    <p>No supported section headings detected.</p>
+                    {% endfor %}
+                </div>
+
+                {% if analysis.quality_report.sections_missing %}
+                <h3 style="margin-top: 20px;">Sections to Review</h3>
+                <div class="skill-list">
+                    {% for section in analysis.quality_report.sections_missing %}
+                    <span class="skill-chip missing">{{ section }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <h3 style="margin-top: 20px;">Improvement Suggestions</h3>
+                <ul>
+                    {% for suggestion in analysis.quality_report.suggestions %}
+                    <li style="margin-bottom: 10px; color: #cbd5e1;">
+                        {{ suggestion }}
+                    </li>
+                    {% empty %}
+                    <li>No suggestions available.</li>
+                    {% endfor %}
+                </ul>
+
+                <h3 style="margin-top: 24px;">Resume Improvement Checklist</h3>
+
+                <div class="resume-checklist">
+
+                    {% if not analysis.quality_report.email_found %}
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        Add a valid email address to your resume.
+                    </label>
+                    {% endif %}
+
+                    {% if not analysis.quality_report.phone_found %}
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        Add your contact phone number.
+                    </label>
+                    {% endif %}
+
+                    {% if analysis.quality_report.sections_missing %}
+                    {% for section in analysis.quality_report.sections_missing %}
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        Review the {{ section }} section.
+                    </label>
+                    {% endfor %}
+                    {% endif %}
+
+                    {% for skill in analysis.missing_skills %}
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        Develop your {{ skill }} skills.
+                    </label>
+                    {% endfor %}
+
+
+                    {% if analysis.quality_report.email_found and analysis.quality_report.phone_found and not analysis.quality_report.sections_missing and not analysis.missing_skills %}
+
+                    <p class="checklist-complete">
+                        Your resume meets all currently configured checks. Continue tailoring it to each job
+                        description.
+                    </p>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </section>
+        {% endif %}
+    </main>
+</body>
+
+</html>
